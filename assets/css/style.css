@@ -414,19 +414,22 @@ main {
 .contacts-list {
   display: grid;
   grid-template-columns: 1fr;
-  gap: 8px;
+  gap: 12px;
+  padding: 0 5px;
 }
 
 .contact-item {
   min-width: 100%;
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   gap: 12px;
+  padding: 8px 0;
 }
 
 .contact-info {
   max-width: calc(100% - 46px);
   width: calc(100% - 46px);
+  min-width: 0;
 }
 
 .contact-title {
@@ -439,6 +442,10 @@ main {
 .contact-info :is(.contact-link, time, address) {
   color: var(--white-2);
   font-size: var(--fs-7);
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  hyphens: auto;
+  line-height: 1.4;
 }
 
 .contact-info address { font-style: normal; }
@@ -2257,6 +2264,48 @@ textarea.form-input::-webkit-resizer { display: none; }
     padding: 10px 2px;
     font-size: var(--fs-8);
   }
+  
+  /* Sidebar mobile improvements */
+  .sidebar {
+    margin-bottom: 15px;
+    padding: 15px;
+  }
+  
+  .sidebar-info {
+    gap: 15px;
+  }
+  
+  .contacts-list {
+    gap: 15px;
+    padding: 0 10px;
+  }
+  
+  .contact-item {
+    padding: 10px 0;
+    gap: 15px;
+  }
+  
+  .contact-info {
+    max-width: calc(100% - 50px);
+    width: calc(100% - 50px);
+  }
+  
+  .contact-title {
+    font-size: var(--fs-7);
+    margin-bottom: 4px;
+  }
+  
+  .contact-info :is(.contact-link, time, address) {
+    font-size: var(--fs-6);
+    line-height: 1.5;
+  }
+  
+  .icon-box {
+    width: 35px;
+    height: 35px;
+    font-size: 16px;
+    flex-shrink: 0;
+  }
 }
 
 /* Extra small screens */
@@ -2303,5 +2352,46 @@ textarea.form-input::-webkit-resizer { display: none; }
   
   .navbar-item {
     max-width: 25%;
+  }
+  
+  /* Sidebar extra small screen improvements */
+  .sidebar {
+    padding: 12px;
+  }
+  
+  .sidebar-info {
+    gap: 12px;
+  }
+  
+  .contacts-list {
+    gap: 12px;
+    padding: 0 5px;
+  }
+  
+  .contact-item {
+    padding: 8px 0;
+    gap: 12px;
+  }
+  
+  .contact-info {
+    max-width: calc(100% - 45px);
+    width: calc(100% - 45px);
+  }
+  
+  .contact-title {
+    font-size: var(--fs-8);
+    margin-bottom: 3px;
+  }
+  
+  .contact-info :is(.contact-link, time, address) {
+    font-size: var(--fs-7);
+    line-height: 1.4;
+  }
+  
+  .icon-box {
+    width: 30px;
+    height: 30px;
+    font-size: 14px;
+    flex-shrink: 0;
   }
 }
