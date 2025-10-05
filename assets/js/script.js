@@ -49,6 +49,42 @@ for (let i = 0; i < testimonialsItem.length; i++) {
 
 }
 
+// Initialize contact info toggle after DOM and navigation are set up
+(() => {
+  const contactToggleBtn = document.querySelector('[data-contact-toggle]');
+  const contactContent = document.querySelector('[data-contact-content]');
+
+  if (!contactToggleBtn || !contactContent) return;
+
+  const setCollapsed = (collapsed) => {
+    if (collapsed) {
+      contactContent.classList.add('is-collapsed');
+      contactContent.classList.remove('is-open');
+      contactToggleBtn.setAttribute('aria-expanded', 'false');
+    } else {
+      contactContent.classList.remove('is-collapsed');
+      contactContent.classList.add('is-open');
+      contactToggleBtn.setAttribute('aria-expanded', 'true');
+    }
+  };
+
+  const applyByViewport = () => {
+    if (window.matchMedia('(max-width: 768px)').matches) {
+      setCollapsed(true);
+    } else {
+      setCollapsed(false);
+    }
+  };
+
+  applyByViewport();
+  window.addEventListener('resize', applyByViewport);
+
+  contactToggleBtn.addEventListener('click', () => {
+    const isExpanded = contactToggleBtn.getAttribute('aria-expanded') === 'true';
+    setCollapsed(isExpanded);
+  });
+})();
+
 // add click event to modal close button
 modalCloseBtn.addEventListener("click", testimonialsModalFunc);
 overlay.addEventListener("click", testimonialsModalFunc);
@@ -151,6 +187,8 @@ for (let i = 0; i < navigationLinks.length; i++) {
     for (let j = 0; j < navigationLinks.length; j++) {
       navigationLinks[j].classList.remove("active");
     }
+
+// (moved below) Mobile toggle for contact info section
 
     // Add active class to clicked nav link
     this.classList.add("active");

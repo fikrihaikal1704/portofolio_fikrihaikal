@@ -408,6 +408,8 @@ main {
   transition: var(--transition-2);
   position: relative;
   z-index: 1;
+  overflow: visible;
+  max-height: none;
 }
 
 .sidebar.active .sidebar-info_more {
@@ -423,28 +425,29 @@ main {
 }
 
 .contact-item {
-  min-width: 100%;
+  min-width: 0;
   display: flex;
-  align-items: flex-start;
+  align-items: center;
   gap: 15px;
   padding: 12px 8px;
-  background: var(--bg-gradient-jet);
-  border: 1px solid var(--jet);
-  border-radius: 12px;
+  background: transparent;
+  border: 0;
+  border-bottom: 1px solid var(--border-white-10);
+  border-radius: 0;
   transition: var(--transition-1);
 }
 
-.contact-item:hover {
-  transform: translateY(-2px);
-  box-shadow: var(--shadow-1);
-  border-color: var(--orange-yellow-crayola);
-}
+.contact-item:hover { background: transparent; box-shadow: none; transform: none; border-color: var(--border-white-10); }
+
+.contact-item:last-child { border-bottom: 0; }
 
 .contact-info {
   flex: 1;
   min-width: 0;
   overflow: hidden;
 }
+
+.contact-info-details { display: flex; flex-direction: column; justify-content: center; }
 
 .contact-title {
   color: var(--light-gray-70);
@@ -606,7 +609,7 @@ main {
 .service-item-text {
   color: var(--light-gray);
   font-size: var(--fs-6);
-  font-weight: var(--fw-3);
+  font-weight: var(--fw-300);
   line-height: 1.6;
 }
 
@@ -1825,7 +1828,14 @@ textarea.form-input::-webkit-resizer { display: none; }
     padding: 0 20px;
   }
 
-  .navbar-link { font-weight: var(--fw-500); }
+  /* Desktop navbar: prevent truncation */
+  .navbar-item { max-width: none; flex: initial; }
+  .navbar-link {
+    font-weight: var(--fw-500);
+    white-space: nowrap;
+    overflow: visible;
+    text-overflow: unset;
+  }
 
 
 
@@ -1963,10 +1973,14 @@ textarea.form-input::-webkit-resizer { display: none; }
 
   .contacts-list { grid-template-columns: 1fr; }
 
-  .contact-info :is(.contact-link) {
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
+  /* Sidebar contact text should wrap fully (no truncation) */
+  .contacts-list .contact-info :is(.contact-link, time, address) {
+    white-space: normal;
+    overflow: visible;
+    text-overflow: clip;
+    word-break: break-word;
+    overflow-wrap: anywhere;
+    hyphens: auto;
   }
 
   .contact-info :is(.contact-link, time, address) {
@@ -1998,6 +2012,35 @@ textarea.form-input::-webkit-resizer { display: none; }
 .contact-info {
   margin-bottom: 50px;
 }
+
+/* Contact section header and toggle */
+.contact-info-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.contact-toggle-btn {
+  color: var(--orange-yellow-crayola);
+  background: var(--border-gradient-onyx);
+  padding: 8px 12px;
+  border-radius: 10px;
+  display: none; /* shown on mobile via media query */
+  align-items: center;
+  gap: 6px;
+}
+
+.contact-toggle-btn ion-icon { --ionicon-stroke-width: 35px; transition: transform var(--transition-2); }
+
+.contact-info-collapsible {
+  overflow: hidden;
+  transition: max-height var(--transition-2), opacity var(--transition-2);
+  background: var(--eerie-black-2); /* ensure solid background on mobile */
+}
+
+.contact-info-collapsible.is-collapsed { max-height: 0; opacity: 0; pointer-events: none; }
+.contact-info-collapsible.is-open { pointer-events: auto; }
 
 .contact-info-title {
   margin-bottom: 30px;
@@ -2226,10 +2269,41 @@ textarea.form-input::-webkit-resizer { display: none; }
 
 /* Responsive */
 @media (max-width: 768px) {
+  /* Show toggle on mobile and collapse by default */
+  .contact-toggle-btn { display: inline-flex; }
+  /* Mobile contact panel as fixed overlay with solid background */
+  .contact-info-collapsible {
+    position: fixed !important;
+    top: 0 !important;
+    left: 0 !important;
+    width: 100% !important;
+    height: 100vh !important; /* debug: ensure full cover */
+    max-height: 100vh !important;
+    overflow: auto !important;
+    background: rgba(30,30,30,1) !important; /* solid */
+    z-index: 9999 !important; /* under navbar override below */
+    transform: translateY(-100%);
+    opacity: 0 !important;
+    pointer-events: none !important;
+    transition: transform 0.3s ease, opacity 0.3s ease !important;
+    border-bottom: 1px solid var(--jet) !important;
+    padding-top: 60px; /* leave room for navbar/header if needed */
+  }
+  .contact-info-collapsible.is-open {
+    transform: translateY(0) !important;
+    opacity: 1 !important;
+    pointer-events: auto !important;
+  }
+  .contact-toggle-btn[aria-expanded="true"] ion-icon { transform: rotate(180deg); }
+  /* Keep navbar above the contact panel */
+  .navbar { z-index: 10001 !important; position: relative; }
+  /* Ensure main content doesn't create higher stacking */
+  .main-content { position: relative; z-index: 1; }
   .contact-info-content {
     grid-template-columns: 1fr;
     gap: 15px;
     padding: 0 15px;
+    background: var(--eerie-black-2);
   }
   
   .status-grid {
@@ -2286,43 +2360,71 @@ textarea.form-input::-webkit-resizer { display: none; }
   
   /* Main container mobile overflow fix */
   main {
-    overflow: visible;
+    overflow: visible !important;
     margin-bottom: 100px;
+  }
+  
+  /* Ensure all parent containers allow overflow */
+  body {
+    overflow-x: hidden;
+    overflow-y: visible;
+  }
+  
+  .main-content {
+    overflow: visible !important;
+  }
+  
+  article {
+    overflow: visible !important;
   }
   
   /* Sidebar mobile improvements */
   .sidebar {
     margin-bottom: 15px;
     padding: 15px;
-    overflow: visible;
-    max-height: none;
+    overflow: visible !important;
+    max-height: none !important;
+    height: auto !important;
     position: relative;
-    z-index: 10;
+    z-index: auto;
   }
   
   .sidebar.active {
-    max-height: none;
-    overflow: visible;
+    max-height: none !important;
+    overflow: visible !important;
+    height: auto !important;
   }
   
   .sidebar-info {
     gap: 15px;
+    overflow: visible;
   }
   
   .sidebar-info_more {
-    position: relative;
-    z-index: 9999;
-    opacity: 1;
-    visibility: visible;
-    transform: none;
+    position: relative !important;
+    z-index: auto !important;
+    opacity: 1 !important;
+    visibility: visible !important;
+    transform: none !important;
     margin-top: 15px;
     padding-top: 15px;
     border-top: 1px solid var(--jet);
+    overflow: visible !important;
+    max-height: none !important;
+    height: auto !important;
+    background: var(--eerie-black-2);
   }
   
   .contacts-list {
     gap: 12px;
     padding: 0 5px;
+    overflow: visible !important;
+  }
+  
+  .contact-item {
+    overflow: visible !important;
+    position: relative;
+    z-index: 1;
   }
   
   .contact-item {
@@ -2354,6 +2456,13 @@ textarea.form-input::-webkit-resizer { display: none; }
     font-size: 16px;
     flex-shrink: 0;
   }
+  
+  /* Force sidebar dropdown to be fully visible on mobile */
+  /* Restore original sidebar toggle behavior on mobile */
+  .sidebar { max-height: 112px !important; overflow: hidden !important; position: relative; z-index: auto; }
+  .sidebar.active { max-height: 405px !important; overflow: visible !important; }
+  .sidebar-info_more { opacity: 0 !important; visibility: hidden !important; position: relative; }
+  .sidebar.active .sidebar-info_more { opacity: 1 !important; visibility: visible !important; }
 }
 
 /* Extra small screens */
@@ -2404,42 +2513,69 @@ textarea.form-input::-webkit-resizer { display: none; }
   
   /* Main container extra small screen overflow fix */
   main {
-    overflow: visible;
+    overflow: visible !important;
     margin-bottom: 90px;
+  }
+  
+  /* Ensure all parent containers allow overflow for small screens */
+  body {
+    overflow-x: hidden;
+    overflow-y: visible;
+  }
+  
+  .main-content {
+    overflow: visible !important;
+  }
+  
+  article {
+    overflow: visible !important;
   }
   
   /* Sidebar extra small screen improvements */
   .sidebar {
     padding: 12px;
-    overflow: visible;
-    max-height: none;
+    overflow: visible !important;
+    max-height: none !important;
+    height: auto !important;
     position: relative;
-    z-index: 10;
+    z-index: auto;
   }
   
   .sidebar.active {
-    max-height: none;
-    overflow: visible;
+    max-height: none !important;
+    overflow: visible !important;
+    height: auto !important;
   }
   
   .sidebar-info {
     gap: 12px;
+    overflow: visible;
   }
   
   .sidebar-info_more {
-    position: relative;
-    z-index: 9999;
-    opacity: 1;
-    visibility: visible;
-    transform: none;
+    position: relative !important;
+    z-index: auto !important;
+    opacity: 1 !important;
+    visibility: visible !important;
+    transform: none !important;
     margin-top: 12px;
     padding-top: 12px;
     border-top: 1px solid var(--jet);
+    overflow: visible !important;
+    max-height: none !important;
+    height: auto !important;
   }
   
   .contacts-list {
     gap: 10px;
     padding: 0 3px;
+    overflow: visible !important;
+  }
+  
+  .contact-item {
+    overflow: visible !important;
+    position: relative;
+    z-index: 1;
   }
   
   .contact-item {
@@ -2471,4 +2607,10 @@ textarea.form-input::-webkit-resizer { display: none; }
     font-size: 14px;
     flex-shrink: 0;
   }
+  
+  /* Restore original sidebar toggle behavior on extra small screens */
+  .sidebar { max-height: 112px !important; overflow: hidden !important; position: relative; z-index: auto; }
+  .sidebar.active { max-height: 405px !important; overflow: visible !important; }
+  .sidebar-info_more { opacity: 0 !important; visibility: hidden !important; position: relative; }
+  .sidebar.active .sidebar-info_more { opacity: 1 !important; visibility: visible !important; }
 }

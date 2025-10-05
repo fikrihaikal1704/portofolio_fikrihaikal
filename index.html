@@ -404,7 +404,7 @@
 
         <section class="clients">
 
-          <h3 class="h3 clients-title">Klien</h3>
+          <h3 class="h3 clients-title">Mitra Kerja</h3>
 
           <div class="client-single">
             <div class="client-logo">
@@ -739,9 +739,16 @@
 
         <section class="contact-info">
 
-          <h3 class="h3 contact-info-title">Informasi Kontak</h3>
+          <div class="contact-info-header">
+            <h3 class="h3 contact-info-title">Informasi Kontak</h3>
+            <button class="contact-toggle-btn" data-contact-toggle aria-expanded="false">
+              <span>Detail</span>
+              <ion-icon name="chevron-down"></ion-icon>
+            </button>
+          </div>
 
-          <div class="contact-info-content">
+          <div class="contact-info-collapsible" data-contact-content>
+            <div class="contact-info-content">
 
             <div class="contact-info-item">
               <div class="contact-info-icon">
@@ -803,6 +810,7 @@
               </div>
             </div>
 
+            </div>
           </div>
 
         </section>
