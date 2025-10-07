@@ -10,9 +10,28 @@ const elementToggleFunc = function (elem) { elem.classList.toggle("active"); }
 // sidebar variables
 const sidebar = document.querySelector("[data-sidebar]");
 const sidebarBtn = document.querySelector("[data-sidebar-btn]");
+const sidebarCloseBtn = document.querySelector('[data-sidebar-close]');
 
-// sidebar toggle functionality for mobile
-sidebarBtn.addEventListener("click", function () { elementToggleFunc(sidebar); });
+// sidebar toggle functionality for mobile with background scroll lock
+sidebarBtn.addEventListener("click", function () {
+  elementToggleFunc(sidebar);
+  if (window.matchMedia('(max-width: 768px)').matches) {
+    if (sidebar.classList.contains('active')) {
+      document.body.classList.add('no-scroll');
+    } else {
+      document.body.classList.remove('no-scroll');
+    }
+  }
+});
+
+// sidebar close button for mobile overlay
+if (sidebarCloseBtn) {
+  sidebarCloseBtn.addEventListener('click', function () {
+    sidebar.classList.remove('active');
+    document.body.classList.remove('no-scroll');
+    window.scrollTo(0, 0);
+  });
+}
 
 
 
@@ -53,6 +72,7 @@ for (let i = 0; i < testimonialsItem.length; i++) {
 (() => {
   const contactToggleBtn = document.querySelector('[data-contact-toggle]');
   const contactContent = document.querySelector('[data-contact-content]');
+  const contactCloseBtn = document.querySelector('[data-contact-close]');
 
   if (!contactToggleBtn || !contactContent) return;
 
@@ -61,10 +81,14 @@ for (let i = 0; i < testimonialsItem.length; i++) {
       contactContent.classList.add('is-collapsed');
       contactContent.classList.remove('is-open');
       contactToggleBtn.setAttribute('aria-expanded', 'false');
+      document.body.classList.remove('no-scroll');
     } else {
       contactContent.classList.remove('is-collapsed');
       contactContent.classList.add('is-open');
       contactToggleBtn.setAttribute('aria-expanded', 'true');
+      if (window.matchMedia('(max-width: 768px)').matches) {
+        document.body.classList.add('no-scroll');
+      }
     }
   };
 
@@ -83,6 +107,12 @@ for (let i = 0; i < testimonialsItem.length; i++) {
     const isExpanded = contactToggleBtn.getAttribute('aria-expanded') === 'true';
     setCollapsed(isExpanded);
   });
+
+  if (contactCloseBtn) {
+    contactCloseBtn.addEventListener('click', () => {
+      setCollapsed(true);
+    });
+  }
 })();
 
 // add click event to modal close button
